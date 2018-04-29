@@ -22,17 +22,18 @@ for them to select using the arrow keys and enter. Response type is a string.
 */
 type Select struct {
 	core.Renderer
-	Message       string
-	Options       []string
-	Default       string
-	Help          string
-	PageSize      int
-	VimMode       bool
-	FilterMessage string
-	filter        string
-	selectedIndex int
-	useDefault    bool
-	showingHelp   bool
+	Message            string
+	Options            []string
+	Default            string
+	Help               string
+	PageSize           int
+	VimMode            bool
+	FilterMessage      string
+	FilterResetDefault bool
+	filter             string
+	selectedIndex      int
+	useDefault         bool
+	showingHelp        bool
 }
 
 // the data available to the templates when processing
@@ -105,6 +106,9 @@ func (s *Select) OnChange(line []rune, pos int, key rune) (newLine []rune, newPo
 			s.filter = s.filter[0 : len(s.filter)-1]
 		}
 	} else if key >= terminal.KeySpace {
+		if s.FilterResetDefault {
+			s.useDefault = false
+		}
 		s.filter += string(key)
 		s.VimMode = false
 	}
