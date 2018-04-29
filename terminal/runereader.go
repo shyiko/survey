@@ -5,6 +5,8 @@ import (
 	"unicode"
 )
 
+var DiscardUnsupportedEscapeSequences = false
+
 type RuneReader struct {
 	Input *os.File
 

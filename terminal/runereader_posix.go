@@ -66,6 +66,10 @@ func (rr *RuneReader) ReadRune() (rune, int, error) {
 			return r, size, err
 		}
 		if r != '[' {
+			if DiscardUnsupportedEscapeSequences {
+				rr.state.buf.Discard(rr.state.buf.Buffered())
+				return IgnoreKey, 1, nil
+			}
 			return r, size, fmt.Errorf("Unexpected Escape Sequence: %q", []rune{'\033', r})
 		}
 		r, size, err = rr.state.buf.ReadRune()
