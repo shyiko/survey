@@ -30,9 +30,15 @@ func printChar(char rune, mask rune) {
 }
 
 func (rr *RuneReader) ReadLine(mask rune) ([]rune, error) {
-	line := []rune{}
+	return rr.ReadLineEdit(mask, []rune{})
+}
+
+func (rr *RuneReader) ReadLineEdit(mask rune, line []rune) ([]rune, error) {
+	for _, char := range line {
+		printChar(char, mask)
+	}
 	// we only care about horizontal displacements from the origin so start counting at 0
-	index := 0
+	index := len(line)
 
 	// we get the terminal width and height (if resized after this point the property might become invalid)
 	terminalSize, _ := Size()

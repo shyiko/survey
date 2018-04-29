@@ -19,6 +19,7 @@ type Input struct {
 	core.Renderer
 	Message string
 	Default string
+	EditDefault bool
 	Help    string
 }
 
@@ -39,7 +40,7 @@ var InputQuestionTemplate = `
   {{- color "cyan"}}{{.Answer}}{{color "reset"}}{{"\n"}}
 {{- else }}
   {{- if and .Help (not .ShowHelp)}}{{color "cyan"}}[{{ HelpInputRune }} for help]{{color "reset"}} {{end}}
-  {{- if .Default}}{{color "white"}}({{.Default}}) {{color "reset"}}{{end}}
+  {{- if and .Default (not .EditDefault)}}{{color "white"}}({{.Default}}) {{color "reset"}}{{end}}
 {{- end}}`
 
 func (i *Input) Prompt() (interface{}, error) {
@@ -60,7 +61,11 @@ func (i *Input) Prompt() (interface{}, error) {
 	line := []rune{}
 	// get the next line
 	for {
-		line, err = rr.ReadLine(0)
+		if i.EditDefault {
+			line, err = rr.ReadLineEdit(0, []rune(i.Default))
+		} else {
+			line, err = rr.ReadLine(0)
+		}
 		if err != nil {
 			return string(line), err
 		}
@@ -82,6 +87,9 @@ func (i *Input) Prompt() (interface{}, error) {
 
 	// if the line is empty
 	if line == nil || len(line) == 0 {
+		if i.EditDefault {
+			return "", err
+		}
 		// use the default value
 		return i.Default, err
 	}
